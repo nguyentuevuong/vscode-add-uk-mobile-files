@@ -7,7 +7,7 @@ export function activate(context: ExtensionContext) {
     const addFiles: FileManagers = new FileManagers();
 
     addFiles
-      .showFileNameDialog(args)
+      .showFileNameDialog(args, 'a')
       .then(addFiles.createFolder)
       .then(addFiles.createFiles)
       .then(addFiles.openFileInEditor)
