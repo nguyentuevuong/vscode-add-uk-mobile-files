@@ -27,7 +27,7 @@ export function activate(context: ExtensionContext) {
     const addFiles: FileManagers = new FileManagers();
 
     addFiles
-      .showFileNameDialog(args)
+      .showFileNameDialog(args, 'mobile')
       .then(addFiles.createSingleComponent)
       .then(addFiles.openSingleComponentInEditor)
       .then(() => {

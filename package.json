@@ -16,7 +16,7 @@
     "Add files"
   ],
   "categories": ["Other"],
-  "icon": "images/icon.png",
+  "icon": "icon.png",
   "engines": {
     "vscode": "^1.32.3"
   },

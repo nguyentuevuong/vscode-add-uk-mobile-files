@@ -11,7 +11,7 @@ export interface IFiles {
 
 export class FileManagers {
   // Show input prompt for folder name 
-  public showFileNameDialog(args): Q.Promise<string> {
+  public showFileNameDialog(args: any, cName?: string): Q.Promise<string> {
     const deferred: Q.Deferred<string> = Q.defer<string>();
 
     var clickedFolderPath: string;
@@ -33,7 +33,7 @@ export class FileManagers {
       deferred.reject('Please open a project first. Thanks! :-)');
     } else {
       window.showInputBox({
-        value: 'a',
+        value: cName || 'a',
         prompt: 'UK Mobile: What\'s the name of the new folder?'
       }).then((fileName) => {
         if (fileName) {
