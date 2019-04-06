@@ -72,5 +72,9 @@
     "q": "^1.5.1",
     "path": "^0.12.7"
   },
-  "homepage": "https://github.com/Microsoft/vscode-wordcount/blob/master/README.md"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nsvn-nguyenvanvuong/vscode-add-uk-mobile-files.git"
+  },
+  "homepage": "https://github.com/nsvn-nguyenvanvuong/vscode-add-uk-mobile-files/blob/master/README.md"
 }

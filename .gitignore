@@ -1,0 +1,8 @@
+#ignore project build folders
+**/out*
+
+#ignore node_modules
+**/node_modules*
+
+#ignore cache npm repo
+package-lock.json
