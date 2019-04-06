@@ -6,3 +6,6 @@
 
 #ignore cache npm repo
 package-lock.json
+
+#ignore build vsix file
+**/*.vsix
