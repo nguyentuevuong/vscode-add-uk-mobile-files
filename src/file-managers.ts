@@ -12,9 +12,8 @@ export interface IFiles {
 export class FileManagers {
   // Show input prompt for folder name 
   public showFileNameDialog(args: any, cName?: string): Q.Promise<string> {
-    const deferred: Q.Deferred<string> = Q.defer<string>();
-
-    var clickedFolderPath: string;
+    let clickedFolderPath: string = "",
+      deferred: Q.Deferred<string> = Q.defer<string>();
 
     if (args) {
       clickedFolderPath = args.fsPath
@@ -27,18 +26,18 @@ export class FileManagers {
       }
     }
 
-    var newFolderPath: string = fs.lstatSync(clickedFolderPath).isDirectory() ? clickedFolderPath : path.dirname(clickedFolderPath);
+    let newFolderPath: string = fs.lstatSync(clickedFolderPath).isDirectory() ? clickedFolderPath : path.dirname(clickedFolderPath);
 
     if (workspace.rootPath === undefined) {
-      deferred.reject('Please open a project first. Thanks! :-)');
+      deferred.reject('Please open a project first.');
     } else {
       window.showInputBox({
         value: cName || 'a',
         prompt: 'UK Mobile: What\'s the name of the new folder?'
       }).then((fileName) => {
         if (fileName) {
-          if (/[~`!#$%\^&*+=\[\]\\';,/{}|\\":<>\?\s]/g.test(fileName)) {
-            deferred.reject('That\'s not a valid name! (no whitespaces or special characters)');
+          if (/[~`!#$%\^&*+=\[\]';,{}|":<>\?\s\.]/g.test(fileName)) { //[~`!#$%\^&*+=\[\]\\';,/{}|\\":<>\?\s\.]
+            deferred.reject('That\'s not a valid folder name! (no whitespaces or special characters)');
           } else {
             deferred.resolve(path.join(newFolderPath, fileName));
           }
@@ -57,8 +56,32 @@ export class FileManagers {
 
     fs.exists(folderName, (exists) => {
       if (!exists) {
-        fs.mkdirSync(folderName);
-        deferred.resolve(folderName);
+        if (folderName.match(/views/)) {
+          let $path = folderName.split(`${path.sep}views${path.sep}`);
+          if ($path.length == 2 && $path[1].indexOf(path.sep) > -1) {
+            let b = undefined,
+              $paths = $path[1].split(path.sep),
+              $roots = `${$path[0]}${path.sep}views`;
+
+            while (!!(b = $paths.shift())) {
+              $roots = path.join($roots, b);
+
+              if (!fs.existsSync($roots)) {
+                fs.mkdirSync($roots);
+              }
+
+              if ($paths.length == 0) {
+                deferred.resolve(folderName);
+              }
+            }
+          } else {
+            fs.mkdirSync(folderName);
+            deferred.resolve(folderName);
+          }
+        } else {
+          fs.mkdirSync(folderName);
+          deferred.resolve(folderName);
+        }
       } else {
         deferred.reject('Folder already exists');
       }
