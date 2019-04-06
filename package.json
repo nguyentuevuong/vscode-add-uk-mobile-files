@@ -1,0 +1,76 @@
+{
+  "name": "vscode-add-uk-mobile-files",
+  "displayName": "Add UK Mobile Files",
+  "description": "Add UK Mobile files including snippets to your Visual Studio Code project",
+  "version": "1.0.0",
+  "publisher": "nguyenvanvuong",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "author": {
+    "name": "NSVN - Nguyen Van Vuong"
+  },
+  "keywords": [
+    "Vue",
+    "Vue 2",
+    "UK Mobile",
+    "TypeScript",
+    "Add files"
+  ],
+  "icon": "images/icon.png",
+  "engines": {
+    "vscode": "^1.5.0"
+  },
+  "scripts": {
+    "compile": "tsc -watch -p ./",
+    "vscode:prepublish": "tsc -p ./",
+    "package": "./node_modules/.bin/vsce package",
+    "postinstall": "node ./node_modules/vscode/bin/install"
+  },
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./out/src/extension",
+  "contributes": {
+    "commands": [
+      {
+        "command": "extension.addUKMobileFiles",
+        "title": "UK Mobile: Add component",
+        "group": "Add Files"
+      },
+      {
+        "command": "extension.addUKMobileSingleComponent",
+        "title": "UK Mobile: Add single component",
+        "group": "Add Files"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "when": "",
+          "command": "extension.addUKMobileFiles",
+          "group": "Add Files"
+        },
+        {
+          "when": "",
+          "command": "extension.addUKMobileSingleComponent",
+          "group": "Add Files"
+        }
+      ]
+    }
+  },
+  "devDependencies": {
+    "@types/mocha": "^5.2.6",
+    "@types/node": "^11.13.0",
+    "@types/q": "^1.5.2",
+    "@types/rimraf": "^2.0.2",
+    "mocha": "^6.0.2",
+    "rimraf": "^2.6.3",
+    "typescript": "^3.4.2",
+    "vscode": "^1.1.33",
+    "vsce": "^1.59.0"
+  },
+  "dependencies": {
+    "q": "^1.5.1",
+    "path": "^0.12.7"
+  },
+  "homepage": "https://github.com/Microsoft/vscode-wordcount/blob/master/README.md"
+}

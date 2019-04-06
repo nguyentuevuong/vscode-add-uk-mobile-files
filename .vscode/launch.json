@@ -1,0 +1,21 @@
+// A launch configuration that compiles the extension and then opens it inside a new window
+{
+    "version": "0.1.0",
+    "configurations": [
+        {
+            "request": "launch",
+            "type": "extensionHost",
+            "name": "Launch Extension",
+            "runtimeExecutable": "${execPath}",
+            "sourceMaps": true,
+            "stopOnEntry": false,
+            "preLaunchTask": "npm",
+            "outFiles": [
+                "${workspaceRoot}/out/src"
+            ],
+            "args": [
+                "--extensionDevelopmentPath=${workspaceRoot}"
+            ]
+        }
+    ]
+}
