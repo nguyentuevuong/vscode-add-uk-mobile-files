@@ -15,7 +15,7 @@
     "TypeScript",
     "Add files"
   ],
-  "categories": ["Other"],
+  "categories": ["Extension Packs"],
   "icon": "icon.png",
   "engines": {
     "vscode": "^1.32.3"
