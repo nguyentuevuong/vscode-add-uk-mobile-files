@@ -16,7 +16,7 @@
     "Add files"
   ],
   "categories": ["Extension Packs"],
-  "icon": "icon.png",
+  "icon": "images/icon.png",
   "engines": {
     "vscode": "^1.32.3"
   },
