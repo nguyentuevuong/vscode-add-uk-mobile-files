@@ -58,6 +58,7 @@ export class FileManagers {
       if (!exists) {
         if (folderName.match(/views/)) {
           let $path = folderName.split(`${path.sep}views${path.sep}`);
+
           if ($path.length == 2 && $path[1].indexOf(path.sep) > -1) {
             let b = undefined,
               $paths = $path[1].split(path.sep),
@@ -66,16 +67,64 @@ export class FileManagers {
             while (!!(b = $paths.shift())) {
               $roots = path.join($roots, b);
 
+              let $file = path.join($roots, 'index.ts');
+
               if (!fs.existsSync($roots)) {
                 fs.mkdirSync($roots);
+
+                if ($paths.length > 0) {
+                  fs.writeFileSync($file, `import './${$paths[0]}';`);
+                }
+              } else {
+                if (fs.existsSync($file)) {
+                  let $content: string[] = fs.readFileSync($file).toString().split('\n');
+
+                  if ($content.indexOf(`import './${$paths[0]}';`) > -1) {
+                    fs.writeFileSync($file, $content.join('\n'));
+                  } else {
+                    $content.push(`import './${$paths[0]}';`);
+
+                    fs.writeFileSync($file, $content.sort().join('\n'));
+                  }
+                } else {
+                  fs.writeFileSync($file, `import './${$paths[0]}';`);
+                }
               }
 
-              if ($paths.length == 0) {
+              if ($paths.length == 1) {
+                let $file = path.join($path[0], 'views', 'index.ts');
+
+                if (fs.existsSync($file)) {
+                  let $content: string[] = fs.readFileSync($file).toString().split('\n');
+
+                  if ($content.indexOf(`import '@views/${$path[1].split(path.sep)[0]}';`) > -1) {
+                    fs.writeFileSync($file, $content.join('\n'));
+                  } else {
+                    $content.push(`import '@views/${$path[1].split(path.sep)[0]}';`);
+
+                    fs.writeFileSync($file, $content.sort().join('\n'));
+                  }
+                }
+              } else if ($paths.length == 0) {
                 deferred.resolve(folderName);
               }
             }
           } else {
             fs.mkdirSync(folderName);
+            let $file = path.join($path[0], 'views', 'index.ts');
+
+            if (fs.existsSync($file)) {
+              let $content: string[] = fs.readFileSync($file).toString().split('\n');
+
+              if ($content.indexOf(`import '@views/${$path[1]}';`) > -1) {
+                fs.writeFileSync($file, $content.join('\n'));
+              } else {
+                $content.push(`import '@views/${$path[1]}';`);
+
+                fs.writeFileSync($file, $content.sort().join('\n'));
+              }
+            }
+
             deferred.resolve(folderName);
           }
         } else {
