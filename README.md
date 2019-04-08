@@ -10,7 +10,8 @@
 > <br />Bước 4: Khởi động serve bằng lệnh: `npm run start:dev` và truy cập vào đường link tương ứng với thư mục khởi tạo view để kiểm tra kết quả.
 > <br />Bước 5: Nếu kết quả khởi tạo đúng. Đẩy toàn bộ những tập tin được tạo và thay đổi lên `github`.
 
-**Hình minh hoạ**
+**Hình minh hoạ:**
+
 ![Thêm một view](./images/add-view.gif)
 
 #### 2. Thêm một control (dành cho kiban).
@@ -20,5 +21,6 @@
 > <br />Bước 3: Nhập tên file chứa component (Ví dụ: `nts-input-text`, `nts-input-number`,...).
 > <br />Bước 4: Import component và code theo các hướng dẫn khác đã tạo mục `documents`.
 
-**Hình minh hoạ**
+**Hình minh hoạ:**
+
 ![Thêm một control](./images/add-control.gif)
