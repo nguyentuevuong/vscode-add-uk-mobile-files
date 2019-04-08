@@ -16,11 +16,11 @@
     "Add files"
   ],
   "categories": [
-    "Extension Packs"
+    "Other"
   ],
   "icon": "images/icon.png",
   "engines": {
-    "vscode": "^1.33.0"
+		"vscode": "^1.25.0"
   },
   "scripts": {
     "compile": "tsc -watch -p ./",
@@ -31,7 +31,7 @@
   "activationEvents": [
     "*"
   ],
-  "main": "./out/src/extension",
+  "main": "./out/src/extension.js",
   "contributes": {
     "commands": [
       {
@@ -48,12 +48,12 @@
     "menus": {
       "explorer/context": [
         {
-          "when": "",
+          "when": "explorerResourceIsFolder",
           "command": "extension.addUKMobileFiles",
           "group": "Add Files"
         },
         {
-          "when": "",
+          "when": "explorerResourceIsFolder",
           "command": "extension.addUKMobileSingleComponent",
           "group": "Add Files"
         }
@@ -68,7 +68,7 @@
     "mocha": "^6.0.2",
     "rimraf": "^2.6.3",
     "typescript": "^3.4.2",
-    "vscode": "^1.1.33",
+    "vscode": "^1.1.22",
     "vsce": "^1.59.0"
   },
   "dependencies": {

@@ -3,7 +3,7 @@ import { FileManagers } from './file-managers';
 import { ExtensionContext, commands, window } from 'vscode';
 
 export function activate(context: ExtensionContext) {
-  context.subscriptions.push(commands.registerCommand('extension.addUKMobileFiles', (args) => {
+  let disposeAddView = commands.registerCommand('extension.addUKMobileFiles', (args) => {
     const addFiles: FileManagers = new FileManagers();
 
     addFiles
@@ -20,10 +20,7 @@ export function activate(context: ExtensionContext) {
           window.showErrorMessage(err);
         }
       });
-  }));
-
-
-  context.subscriptions.push(commands.registerCommand('extension.addUKMobileSingleComponent', (args) => {
+  }), disposeAddControl = commands.registerCommand('extension.addUKMobileSingleComponent', (args) => {
     const addFiles: FileManagers = new FileManagers();
 
     addFiles
@@ -39,5 +36,8 @@ export function activate(context: ExtensionContext) {
           window.showErrorMessage(err);
         }
       });
-  }));
+  });
+
+  context.subscriptions.push(disposeAddView);
+  context.subscriptions.push(disposeAddControl);
 }
