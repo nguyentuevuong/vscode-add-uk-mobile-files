@@ -9,3 +9,6 @@ package-lock.json
 
 #ignore build vsix file
 **/*.vsix
+
+#ignore cache of spotlight (macOS)
+**/.DS_Store
