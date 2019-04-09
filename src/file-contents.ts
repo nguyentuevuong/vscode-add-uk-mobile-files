@@ -7,12 +7,14 @@ const $style = (className: string) => `.${className} {\n\n}`,
         "${name}": "${name} (vi)"
     }
 }`,
-    $template = (className: string) => `<div class="${className}">
-    <h3>Hello {{title | i18n}} component!</h3>
-    <nts-text-editor
-        name='title'
-        v-model='title' />
-</div>`,
+    $template = (className: string) => `<template>
+    <div class="${className}">
+        <h3>Hello {{title | i18n}} component!</h3>
+        <nts-text-editor
+            name='title'
+            v-model='title' />
+    </div>
+</template>`,
     $viewmodel = (path: string, name: string, componentName: string) => `import { Vue } from '@app/provider';
 import { component } from '@app/core/component';
 
@@ -20,7 +22,7 @@ import { component } from '@app/core/component';
     name: '${name}',
     route: '/${path}',
     style: require('./style.scss'),
-    template: require('./index.html'),
+    template: require('./index.vue'),
     resource: require('./resources.json'),
     validations: {},
     constraints: []

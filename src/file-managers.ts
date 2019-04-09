@@ -171,7 +171,7 @@ export class FileManagers {
         name: path.join(folderName, `index.ts`),
         content: fc.componentContent(paths)
       }, {
-        name: path.join(folderName, `index.html`),
+        name: path.join(folderName, `index.vue`),
         content: fc.templateContent(paths)
       }, {
         name: path.join(folderName, `style.scss`),
