@@ -106,11 +106,20 @@ export class FileManagers {
                   }
                 }
               } else if ($paths.length == 0) {
+                if (folderName.match(/ClientApp\/views\/documents\//)) {
+                  fs.mkdirSync(path.join(folderName, 'content'));
+                }
+
                 deferred.resolve(folderName);
               }
             }
           } else {
             fs.mkdirSync(folderName);
+
+            if (folderName.match(/ClientApp\/views\/documents\//)) {
+              fs.mkdirSync(path.join(folderName, 'content'));
+            }
+
             let $file = path.join($path[0], 'views', 'index.ts');
 
             if (fs.existsSync($file)) {
@@ -129,6 +138,11 @@ export class FileManagers {
           }
         } else {
           fs.mkdirSync(folderName);
+
+          if (folderName.match(/ClientApp\/views\/documents\//)) {
+            fs.mkdirSync(path.join(folderName, 'content'));
+          }
+          
           deferred.resolve(folderName);
         }
       } else {
@@ -148,7 +162,7 @@ export class FileManagers {
     // write files
     af.writeFiles([{
       name: `${folderName}.ts`,
-      content: fc.singleComponent(path.parse(folderName).name)
+      content: fc.components.single(path.parse(folderName).name)
     }]).then((errors) => {
       if (errors.length > 0) {
         window.showErrorMessage(`${errors.length} file(s) could not be created. I'm sorry :-(`);
@@ -162,29 +176,64 @@ export class FileManagers {
   }
 
   // Get file contents and create the new files in the folder 
-  public createFiles(folderName: string): Q.Promise<string> {
+  public createViewFiles(folderName: string): Q.Promise<string> {
     const af: FileManagers = new FileManagers(),
       fc: FileContents = new FileContents(),
       deferred: Q.Deferred<string> = Q.defer<string>(),
       paths: string = (folderName.split(`${path.sep}views${path.sep}`)[1] || path.parse(folderName).name),
       files: IFiles[] = [{ // create an IFiles array including file names and contents
         name: path.join(folderName, `index.ts`),
-        content: fc.componentContent(paths)
+        content: fc.views.viewmodel(paths)
       }, {
         name: path.join(folderName, `index.vue`),
-        content: fc.templateContent(paths)
+        content: fc.views.template(paths)
       }, {
         name: path.join(folderName, `style.scss`),
-        content: fc.cssContent(paths)
+        content: fc.views.style(paths)
       }, {
         name: path.join(folderName, 'resources.json'),
-        content: fc.resourceContent(paths)
+        content: fc.views.resource(paths)
       }];
 
     // write files
     af.writeFiles(files).then((errors) => {
       if (errors.length > 0) {
-        window.showErrorMessage(`${errors.length} file(s) could not be created. I'm sorry :-(`);
+        window.showErrorMessage(`${errors.length} file(s) could not be created.`);
+      }
+      else {
+        deferred.resolve(folderName);
+      }
+    });
+
+    return deferred.promise;
+  }
+
+  public createDocumentFiles(folderName: string): Q.Promise<string> {
+    const af: FileManagers = new FileManagers(),
+      fc: FileContents = new FileContents(),
+      deferred: Q.Deferred<string> = Q.defer<string>(),
+      paths: string = (folderName.split(`${path.sep}views${path.sep}`)[1] || path.parse(folderName).name),
+      files: IFiles[] = [{ // create an IFiles array including file names and contents
+        name: path.join(folderName, `index.ts`),
+        content: fc.documents.viewmodel(paths)
+      }, {
+        name: path.join(folderName, `index.vue`),
+        content: fc.documents.template(paths)
+      }, {
+        name: path.join(folderName, 'content', `vi.json`),
+        content: fc.documents.markdown()
+      }, {
+        name: path.join(folderName, 'content', `jp.json`),
+        content: fc.documents.markdown()
+      }, {
+        name: path.join(folderName, 'resources.json'),
+        content: fc.documents.resource(paths)
+      }];
+    debugger;
+    // write files
+    af.writeFiles(files).then((errors) => {
+      if (errors.length > 0) {
+        window.showErrorMessage(`${errors.length} file(s) could not be created.`);
       }
       else {
         deferred.resolve(folderName);
@@ -215,6 +264,28 @@ export class FileManagers {
   public openFileInEditor(folderName): Q.Promise<TextEditor> {
     const deferred: Q.Deferred<TextEditor> = Q.defer<TextEditor>(),
       fullFilePath: string = path.join(folderName, `index.ts`);
+
+    workspace.openTextDocument(fullFilePath).then((textDocument) => {
+      if (!textDocument) {
+        return;
+      }
+
+      window.showTextDocument(textDocument).then((editor) => {
+        if (!editor) {
+          return;
+        }
+
+        deferred.resolve(editor);
+      });
+    });
+
+    return deferred.promise;
+  }
+
+  // Open the created component in the editor
+  public openDocInEditor(folderName): Q.Promise<TextEditor> {
+    const deferred: Q.Deferred<TextEditor> = Q.defer<TextEditor>(),
+      fullFilePath: string = path.join(folderName, `index.vue`);
 
     workspace.openTextDocument(fullFilePath).then((textDocument) => {
       if (!textDocument) {

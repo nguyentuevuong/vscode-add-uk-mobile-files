@@ -2,7 +2,7 @@
   "name": "vscode-add-uk-mobile-files",
   "displayName": "Add UK Mobile Files",
   "description": "Add UK Mobile files including snippets to your Visual Studio Code project",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "publisher": "nguyenvanvuong",
   "license": "SEE LICENSE IN LICENSE.md",
   "author": {
@@ -20,7 +20,7 @@
   ],
   "icon": "images/icon.png",
   "engines": {
-		"vscode": "^1.25.0"
+    "vscode": "^1.25.0"
   },
   "scripts": {
     "compile": "tsc -watch -p ./",
@@ -43,6 +43,11 @@
         "command": "extension.addUKMobileSingleComponent",
         "title": "UK Mobile: Add single component",
         "group": "Add Files"
+      },
+      {
+        "command": "extension.addUKMobileDocument",
+        "title": "UK Mobile: Add documents (for kiban)",
+        "group": "Add Files"
       }
     ],
     "menus": {
@@ -50,6 +55,11 @@
         {
           "when": "explorerResourceIsFolder",
           "command": "extension.addUKMobileFiles",
+          "group": "Add Files"
+        },
+        {
+          "when": "explorerResourceIsFolder",
+          "command": "extension.addUKMobileDocument",
           "group": "Add Files"
         },
         {
