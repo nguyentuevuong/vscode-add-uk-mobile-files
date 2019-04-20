@@ -220,10 +220,10 @@ export class FileManagers {
         name: path.join(folderName, `index.vue`),
         content: fc.documents.template(paths)
       }, {
-        name: path.join(folderName, 'content', `vi.json`),
+        name: path.join(folderName, 'content', `vi.md`),
         content: fc.documents.markdown()
       }, {
-        name: path.join(folderName, 'content', `jp.json`),
+        name: path.join(folderName, 'content', `jp.md`),
         content: fc.documents.markdown()
       }, {
         name: path.join(folderName, 'resources.json'),

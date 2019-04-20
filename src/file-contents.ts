@@ -28,7 +28,7 @@ import { component } from '@app/core/component';
     constraints: []
 })
 export class ${componentName}Component extends Vue {
-    title: string = '${componentName}';
+    public title: string = '${componentName}';
 }`
 }, $component = (name: string, componentName: string) => `import { Vue } from '@app/provider';
 import { component, Prop } from '@app/core/component';
@@ -38,7 +38,7 @@ import { component, Prop } from '@app/core/component';
 })
 export class ${componentName}Component extends Vue {
     @Prop({ default: () => '${componentName}'})
-    title!: string;
+    public readonly title!: string;
 }`, $documents = {
         markdown: () => `##### 2. Explaint
 > Sample quote
