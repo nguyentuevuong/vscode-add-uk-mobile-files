@@ -229,7 +229,7 @@ export class FileManagers {
         name: path.join(folderName, 'resources.json'),
         content: fc.documents.resource(paths)
       }];
-    debugger;
+      
     // write files
     af.writeFiles(files).then((errors) => {
       if (errors.length > 0) {
