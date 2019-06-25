@@ -77,8 +77,8 @@ export class FileManagers {
                 }
               } else {
                 if (fs.existsSync($file)) {
-                  let $content: string[] = fs.readFileSync($file).toString().split('\n');
-
+                  let $content: string[] = fs.readFileSync($file).toString().split('\n').map(m => m.replace(/\r$/, ''));
+                  
                   if ($content.indexOf(`import './${$paths[0]}';`) > -1) {
                     fs.writeFileSync($file, $content.join('\n'));
                   } else {
@@ -142,7 +142,7 @@ export class FileManagers {
           if (folderName.match(/ClientApp\/views\/documents\//)) {
             fs.mkdirSync(path.join(folderName, 'content'));
           }
-          
+
           deferred.resolve(folderName);
         }
       } else {
@@ -228,17 +228,24 @@ export class FileManagers {
       }, {
         name: path.join(folderName, 'resources.json'),
         content: fc.documents.resource(paths)
-      }];
-      
-    // write files
-    af.writeFiles(files).then((errors) => {
-      if (errors.length > 0) {
-        window.showErrorMessage(`${errors.length} file(s) could not be created.`);
-      }
-      else {
-        deferred.resolve(folderName);
-      }
-    });
+      }], $files = path.join(folderName, 'content'),
+      createFile = () => {
+        // write files
+        af.writeFiles(files).then((errors) => {
+          if (errors.length > 0) {
+            window.showErrorMessage(`${errors.length} file(s) could not be created.`);
+          }
+          else {
+            deferred.resolve(folderName);
+          }
+        });
+      };
+
+    if (!fs.existsSync($files)) {
+      af.createFolder($files).then(createFile);
+    } else {
+      createFile();
+    }
 
     return deferred.promise;
   }
