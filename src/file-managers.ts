@@ -1,335 +1,212 @@
 import * as Q from 'q';
 import * as fs from 'fs';
 import * as path from 'path';
-import { FileContents } from './file-contents';
-import { window, workspace, TextEditor } from 'vscode';
+import { view, document } from './file-contents';
+import { window, workspace, TextEditor, TextDocument } from 'vscode';
 
 export interface IFiles {
   name: string;
   content: string;
 }
 
-export class FileManagers {
-  // Show input prompt for folder name 
-  public showFileNameDialog(args: any, cName?: string): Q.Promise<string> {
-    let clickedFolderPath: string = "",
-      deferred: Q.Deferred<string> = Q.defer<string>();
+const writeFiles = (files: IFiles[]): Q.Promise<string[]> => {
+  const errors: string[] = [],
+    deferred: Q.Deferred<string[]> = Q.defer<string[]>();
 
-    if (args) {
-      clickedFolderPath = args.fsPath
-    } else {
-      if (!window.activeTextEditor) {
-        deferred.reject('Please open a file first.. or just right-click on a file/folder and use the context menu!');
-        return deferred.promise;
-      } else {
-        clickedFolderPath = path.dirname(window.activeTextEditor.document.fileName);
+  files.forEach(file => {
+    fs.writeFile(file.name, file.content, (err) => {
+      if (err) {
+        errors.push(err.message)
       }
-    }
 
-    let newFolderPath: string = fs.lstatSync(clickedFolderPath).isDirectory() ? clickedFolderPath : path.dirname(clickedFolderPath);
+      deferred.resolve(errors);
+    });
+  });
 
-    if (workspace.rootPath === undefined) {
-      deferred.reject('Please open a project first.');
-    } else {
-      window.showInputBox({
-        value: cName || 'a',
-        prompt: 'UK Mobile: What\'s the name of the new folder?'
-      }).then((fileName) => {
-        if (fileName) {
-          if (/[~`!#$%\^&*+=\[\]';,{}|":<>\?\s\.]/g.test(fileName)) { //[~`!#$%\^&*+=\[\]\\';,/{}|\\":<>\?\s\.]
-            deferred.reject('That\'s not a valid folder name! (no whitespaces or special characters)');
-          } else {
-            deferred.resolve(path.join(newFolderPath, fileName));
-          }
-        } else {
-          deferred.reject("UK Mobile: Task was cancelled!")
-        }
-      }, (error) => console.error(error));
-    }
+  return deferred.promise;
+};
 
-    return deferred.promise;
-  }
+// Create the new folder
+export const createFolder = (folderName: string): Q.Promise<string> => {
+  const d: Q.Deferred<string> = Q.defer<string>();
 
-  // Create the new folder
-  public createFolder(folderName): Q.Promise<string> {
-    const deferred: Q.Deferred<string> = Q.defer<string>();
+  fs.exists(folderName, (exist: boolean) => {
+    if (!exist) {
+      if (folderName.match(/views/)) {
+        let $path = folderName.split(`${path.sep}views${path.sep}`);
 
-    fs.exists(folderName, (exists) => {
-      if (!exists) {
-        if (folderName.match(/views/)) {
-          let $path = folderName.split(`${path.sep}views${path.sep}`);
+        if ($path.length == 2 && $path[1].indexOf(path.sep) > -1) {
+          let b = undefined,
+            $paths = $path[1].split(path.sep),
+            $roots = `${$path[0]}${path.sep}views`;
 
-          if ($path.length == 2 && $path[1].indexOf(path.sep) > -1) {
-            let b = undefined,
-              $paths = $path[1].split(path.sep),
-              $roots = `${$path[0]}${path.sep}views`;
+          while (!!(b = $paths.shift())) {
+            $roots = path.join($roots, b);
 
-            while (!!(b = $paths.shift())) {
-              $roots = path.join($roots, b);
-
-              let $file = path.join($roots, 'index.ts');
-
-              if (!fs.existsSync($roots)) {
-                fs.mkdirSync($roots);
-
-                if ($paths.length > 0) {
-                  fs.writeFileSync($file, `import './${$paths[0]}';`);
-                }
-              } else {
-                if (fs.existsSync($file)) {
-                  let $content: string[] = fs.readFileSync($file).toString().split('\n').map(m => m.replace(/\r$/, ''));
-                  
-                  if ($content.indexOf(`import './${$paths[0]}';`) > -1) {
-                    fs.writeFileSync($file, $content.join('\n'));
-                  } else {
-                    $content.push(`import './${$paths[0]}';`);
-
-                    fs.writeFileSync($file, $content.sort().join('\n'));
-                  }
-                } else {
-                  fs.writeFileSync($file, `import './${$paths[0]}';`);
-                }
-              }
-
-              if ($paths.length == 1) {
-                let $file = path.join($path[0], 'views', 'index.ts');
-
-                if (fs.existsSync($file)) {
-                  let $content: string[] = fs.readFileSync($file).toString().split('\n');
-
-                  if ($content.indexOf(`import '@views/${$path[1].split(path.sep)[0]}';`) > -1) {
-                    fs.writeFileSync($file, $content.join('\n'));
-                  } else {
-                    $content.push(`import '@views/${$path[1].split(path.sep)[0]}';`);
-
-                    fs.writeFileSync($file, $content.sort().join('\n'));
-                  }
-                }
-              } else if ($paths.length == 0) {
-                if (folderName.match(/ClientApp\/views\/documents\//)) {
-                  fs.mkdirSync(path.join(folderName, 'content'));
-                }
-
-                deferred.resolve(folderName);
-              }
-            }
-          } else {
-            fs.mkdirSync(folderName);
-
-            if (folderName.match(/ClientApp\/views\/documents\//)) {
-              fs.mkdirSync(path.join(folderName, 'content'));
+            if (!fs.existsSync($roots)) {
+              fs.mkdirSync($roots);
             }
 
-            let $file = path.join($path[0], 'views', 'index.ts');
-
-            if (fs.existsSync($file)) {
-              let $content: string[] = fs.readFileSync($file).toString().split('\n');
-
-              if ($content.indexOf(`import '@views/${$path[1]}';`) > -1) {
-                fs.writeFileSync($file, $content.join('\n'));
-              } else {
-                $content.push(`import '@views/${$path[1]}';`);
-
-                fs.writeFileSync($file, $content.sort().join('\n'));
+            if ($paths.length == 0) {
+              if (folderName.match(/src\/views\/documents\//)) {
+                fs.mkdirSync(path.join(folderName, 'contents'));
               }
-            }
 
-            deferred.resolve(folderName);
+              d.resolve(folderName);
+            }
           }
         } else {
           fs.mkdirSync(folderName);
 
-          if (folderName.match(/ClientApp\/views\/documents\//)) {
-            fs.mkdirSync(path.join(folderName, 'content'));
+          if (folderName.match(/src\/views\/documents\//)) {
+            fs.mkdirSync(path.join(folderName, 'contents'));
           }
 
-          deferred.resolve(folderName);
+          d.resolve(folderName);
         }
       } else {
-        deferred.reject('Folder already exists');
-      }
-    });
+        fs.mkdirSync(folderName);
 
-    return deferred.promise;
+        if (folderName.match(/src\/views\/documents\//)) {
+          fs.mkdirSync(path.join(folderName, 'contents'));
+        }
+
+        d.resolve(folderName);
+      }
+    } else {
+      d.reject('Folder already exists');
+    }
+  });
+
+  return d.promise;
+};
+
+// Show input prompt for folder name 
+export const showFileNameDialog = (args: any, cName?: string): Q.Promise<string> => {
+  let clickedFolderPath: string = "",
+    deferred: Q.Deferred<string> = Q.defer<string>();
+
+  if (args) {
+    clickedFolderPath = args.fsPath
+  } else {
+    if (!window.activeTextEditor) {
+      deferred.reject('Please open a file first.. or just right-click on a file/folder and use the context menu!');
+      return deferred.promise;
+    } else {
+      clickedFolderPath = path.dirname(window.activeTextEditor.document.fileName);
+    }
   }
 
-  // create single component file
-  public createSingleComponent(folderName: string): Q.Promise<string> {
-    const af: FileManagers = new FileManagers(),
-      fc: FileContents = new FileContents(),
-      deferred: Q.Deferred<string> = Q.defer<string>();
+  let newFolderPath: string = fs.lstatSync(clickedFolderPath).isDirectory() ? clickedFolderPath : path.dirname(clickedFolderPath);
 
-    // write files
-    af.writeFiles([{
-      name: `${folderName}.ts`,
-      content: fc.components.single(path.parse(folderName).name)
-    }]).then((errors) => {
-      if (errors.length > 0) {
-        window.showErrorMessage(`${errors.length} file(s) could not be created. I'm sorry :-(`);
+  if (workspace.rootPath === undefined) {
+    deferred.reject('Please open a project first.');
+  } else {
+    window.showInputBox({
+      value: cName || 'a',
+      prompt: 'HL: What\'s the name of the new folder?'
+    }).then((fileName) => {
+      if (fileName) {
+        if (/[~`!#$%\^&*+=\[\]';,{}|":<>\?\s\.]/g.test(fileName)) { //[~`!#$%\^&*+=\[\]\\';,/{}|\\":<>\?\s\.]
+          deferred.reject('That\'s not a valid folder name! (no whitespaces or special characters)');
+        } else {
+          deferred.resolve(path.join(newFolderPath, fileName));
+        }
+      } else {
+        deferred.reject("HL: Task was cancelled!")
       }
-      else {
-        deferred.resolve(folderName);
-      }
-    });
-
-    return deferred.promise;
+    }, (error) => console.error(error));
   }
 
-  // Get file contents and create the new files in the folder 
-  public createViewFiles(folderName: string): Q.Promise<string> {
-    const af: FileManagers = new FileManagers(),
-      fc: FileContents = new FileContents(),
-      deferred: Q.Deferred<string> = Q.defer<string>(),
-      paths: string = (folderName.split(`${path.sep}views${path.sep}`)[1] || path.parse(folderName).name),
-      files: IFiles[] = [{ // create an IFiles array including file names and contents
-        name: path.join(folderName, `index.ts`),
-        content: fc.views.viewmodel(paths)
-      }, {
-        name: path.join(folderName, `index.vue`),
-        content: fc.views.template(paths)
-      }, {
-        name: path.join(folderName, `style.scss`),
-        content: fc.views.style(paths)
-      }, {
-        name: path.join(folderName, 'resources.json'),
-        content: fc.views.resource(paths)
-      }];
+  return deferred.promise;
+};
 
-    // write files
-    af.writeFiles(files).then((errors) => {
+
+// Get file contents and create the new files in the folder 
+export const createViewFiles = (folderName: string): Q.Promise<string> => {
+  const d: Q.Deferred<string> = Q.defer<string>(),
+    paths: string = (folderName.split(`${path.sep}views${path.sep}`)[1] || path.parse(folderName).name),
+    files: IFiles[] = [{ // create an IFiles array including file names and contents
+      name: path.join(folderName, `viewmodel.ts`),
+      content: view.viewmodel(paths)
+    }, {
+      name: path.join(folderName, `index.vue`),
+      content: view.template(paths)
+    }, {
+      name: path.join(folderName, 'resources.json'),
+      content: view.resource(paths)
+    }];
+
+  // write files
+  writeFiles(files)
+    .then((errors) => {
       if (errors.length > 0) {
         window.showErrorMessage(`${errors.length} file(s) could not be created.`);
       }
       else {
-        deferred.resolve(folderName);
+        d.resolve(folderName);
       }
     });
 
-    return deferred.promise;
-  }
+  return d.promise;
+}
 
-  public createDocumentFiles(folderName: string): Q.Promise<string> {
-    const af: FileManagers = new FileManagers(),
-      fc: FileContents = new FileContents(),
-      deferred: Q.Deferred<string> = Q.defer<string>(),
-      paths: string = (folderName.split(`${path.sep}views${path.sep}`)[1] || path.parse(folderName).name),
-      files: IFiles[] = [{ // create an IFiles array including file names and contents
-        name: path.join(folderName, `index.ts`),
-        content: fc.documents.viewmodel(paths)
-      }, {
-        name: path.join(folderName, `index.vue`),
-        content: fc.documents.template(paths)
-      }, {
-        name: path.join(folderName, 'content', `vi.md`),
-        content: fc.documents.markdown()
-      }, {
-        name: path.join(folderName, 'content', `jp.md`),
-        content: fc.documents.markdown()
-      }, {
-        name: path.join(folderName, 'resources.json'),
-        content: fc.documents.resource(paths)
-      }], $files = path.join(folderName, 'content'),
-      createFile = () => {
-        // write files
-        af.writeFiles(files).then((errors) => {
+export const createDocumentFiles = (folderName: string): Q.Promise<string> => {
+  const d: Q.Deferred<string> = Q.defer<string>(),
+    paths: string = (folderName.split(`${path.sep}views${path.sep}`)[1] || path.parse(folderName).name),
+    files: IFiles[] = [{ // create an IFiles array including file names and contents
+      name: path.join(folderName, `viewmodel.ts`),
+      content: document.viewmodel(paths)
+    }, {
+      name: path.join(folderName, `index.vue`),
+      content: document.template(paths)
+    }, {
+      name: path.join(folderName, 'contents', `vi.md`),
+      content: document.markdown()
+    }, {
+      name: path.join(folderName, 'contents', `ja.md`),
+      content: document.markdown()
+    }, {
+      name: path.join(folderName, 'resources.json'),
+      content: document.resource(paths)
+    }], $files = path.join(folderName, 'contents'),
+    createFile = () => {
+      // write files
+      writeFiles(files)
+        .then((errors) => {
           if (errors.length > 0) {
             window.showErrorMessage(`${errors.length} file(s) could not be created.`);
           }
           else {
-            deferred.resolve(folderName);
+            Q.resolve
+            d.resolve(folderName);
           }
         });
-      };
+    };
 
-    if (!fs.existsSync($files)) {
-      af.createFolder($files).then(createFile);
-    } else {
-      createFile();
-    }
-
-    return deferred.promise;
+  if (!fs.existsSync($files)) {
+    createFolder($files).then(createFile);
+  } else {
+    createFile();
   }
 
-  public writeFiles(files: IFiles[]): Q.Promise<string[]> {
-    const errors: string[] = [],
-      deferred: Q.Deferred<string[]> = Q.defer<string[]>();
+  return d.promise;
+};
 
-    files.forEach(file => {
-      fs.writeFile(file.name, file.content, (err) => {
-        if (err) {
-          errors.push(err.message)
-        }
+// Open the created component in the editor
+export const openFileInEditor = (folderName: string): Q.Promise<TextEditor> => {
+  const d: Q.Deferred<TextEditor> = Q.defer<TextEditor>(),
+    fullFilePath: string = path.join(folderName, `index.vue`);
 
-        deferred.resolve(errors);
-      });
+  workspace.openTextDocument(fullFilePath).then((textDocument: TextDocument) => {
+    if (!textDocument) { return; }
+
+    window.showTextDocument(textDocument).then((editor: TextEditor) => {
+      if (!editor) { return; }
+
+      d.resolve(editor);
     });
+  });
 
-    return deferred.promise;
-  }
-
-  // Open the created component in the editor
-  public openFileInEditor(folderName): Q.Promise<TextEditor> {
-    const deferred: Q.Deferred<TextEditor> = Q.defer<TextEditor>(),
-      fullFilePath: string = path.join(folderName, `index.ts`);
-
-    workspace.openTextDocument(fullFilePath).then((textDocument) => {
-      if (!textDocument) {
-        return;
-      }
-
-      window.showTextDocument(textDocument).then((editor) => {
-        if (!editor) {
-          return;
-        }
-
-        deferred.resolve(editor);
-      });
-    });
-
-    return deferred.promise;
-  }
-
-  // Open the created component in the editor
-  public openDocInEditor(folderName): Q.Promise<TextEditor> {
-    const deferred: Q.Deferred<TextEditor> = Q.defer<TextEditor>(),
-      fullFilePath: string = path.join(folderName, `index.vue`);
-
-    workspace.openTextDocument(fullFilePath).then((textDocument) => {
-      if (!textDocument) {
-        return;
-      }
-
-      window.showTextDocument(textDocument).then((editor) => {
-        if (!editor) {
-          return;
-        }
-
-        deferred.resolve(editor);
-      });
-    });
-
-    return deferred.promise;
-  }
-
-  // Open the created component in the editor
-  public openSingleComponentInEditor(folderName): Q.Promise<TextEditor> {
-    const deferred: Q.Deferred<TextEditor> = Q.defer<TextEditor>(),
-      fullFilePath: string = `${folderName}.ts`;
-
-    workspace.openTextDocument(fullFilePath).then((textDocument) => {
-      if (!textDocument) {
-        return;
-      }
-
-      window.showTextDocument(textDocument).then((editor) => {
-        if (!editor) {
-          return;
-        }
-
-        deferred.resolve(editor);
-      });
-    });
-
-    return deferred.promise;
-  }
-}
+  return d.promise;
+};

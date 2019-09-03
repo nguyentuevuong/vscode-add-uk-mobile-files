@@ -1,138 +1,141 @@
-const $views = {
-    style: (className: string) => `.${className} {\n\n}`,
-    resource: (name: string) => `{
-    "jp": {
-        "${name}": "${name} (jp)"
-    },
-    "vi": {
-        "${name}": "${name} (vi)"
+const resources = (name: string) => `{
+	"vi":{
+		"${name.toLowerCase()}": "${name} (vi)"
+	}, 
+	"ja":{
+		"${name.toLowerCase()}": "${name} (ja)"
+	}
+}`,
+    $view = {
+        template: (name: string) => `<template>
+    <div class="${name.toLowerCase()}">
+        <v-validate />
+        <!-- design template view at below -->
+    </div>
+</template>
+
+<script lang="ts" src="./viewmodel.ts"></script>
+<style lang="scss" scoped>
+    .${name.toLowerCase()} {
+        margin: 0;
+        padding: 0;
+        // add some style at here
     }
-}`, template: (className: string) => `<template>
-<div class="${className}">
-    <h3>Hello {{title | i18n}} component!</h3>
-    <nts-text-editor
-        name='title'
-        v-model='title' />
-</div>
-</template>`,
-    viewmodel: (path: string, name: string, componentName: string) => `import { Vue } from '@app/provider';
-import { component } from '@app/core/component';
+</style>`,
+        viewmodel: (name: string) => `import { Vue, Component } from '@/app/provider';
 
-@component({
-    name: '${name}',
-    route: '/${path}',
-    style: require('./style.scss'),
-    template: require('./index.vue'),
-    resource: require('./resources.json'),
-    validations: {},
-    constraints: []
+@Component({
+    resources: require('./resources.json'),
+    validations: {
+        // add validators at here
+    },
+    constraints: [
+        // add constraints name at here   
+    ],
+    enums: [
+        // add enums name at here
+    ]
 })
-export class ${componentName}Component extends Vue {
-    public title: string = '${componentName}';
+export default class ${name}Component extends Vue {
+    // add you bussiness logic code at here
 }`
-}, $component = (name: string, componentName: string) => `import { Vue } from '@app/provider';
-import { component, Prop } from '@app/core/component';
+    }, $document = {
+        template: (name: string) => `<template>
+    <div class="${name.toLowerCase()}">
+        <v-markdown />
+    </div>
+</template>
 
-@component({
-    template: \`<div class="${name}">Hello {{title | i18n}} component!</div>\`
+<script lang="ts" src="./viewmodel.ts"></script>`,
+        viewmodel: (name: string) => `import { Vue, Component } from '@/app/provider';
+
+@Component({
+    markdowns: {
+        vi: require('./contents/vi.md'),
+        ja: require('./contents/ja.md')
+    },
+    resources: require('./resources.json')
 })
-export class ${componentName}Component extends Vue {
-    @Prop({ default: () => '${componentName}'})
-    public readonly title!: string;
-}`, $documents = {
-        markdown: () => `##### 2. Explaint
+export default class ${name}Component extends Vue {
+}`,
+        markdown: `##### 1. Explaint
 > Sample quote
 
 - First item list
 - Second item list
 
-**HTML Code:**
+##### 2. Template
 \`\`\`html
-<div class="sample">
-    <span>Sample html code</span>
-</div>
+<template>
+    <div class="sample">
+        <v-validate />
+        <!-- design template view at below -->
+    </div>
+</template>
+
+<script lang="ts" src="./viewmodel.ts"></script>
+<style lang="scss" scoped>
+    .sample {
+        // add some style at here
+    }
+</style>
 \`\`\`
 
-**Typescript code:**
+##### 3. Viewmodel
 \`\`\`typescript
-class ClassName {
-    constructor() {
-        // sample contructor
-    }
+import { Vue, Component } from '@/app/provider';
 
-    choose() {
-        // sample method
-    }
+@Component({
+    resources: {
+        vi: {
+            sample: 'sample'
+        },
+        ja: {
+            sample: 'sample'
+        }
+    },
+    validations: {
+        // add validators at here
+    },
+    constraints: [
+        // add constraints name at here   
+    ],
+    enums: [
+        // add enums name at here
+    ]
+})
+export default class SampleComponent extends Vue {
+    // add you bussiness logic code at here
 }
 \`\`\`
 
-##### 3. API
+##### 4. API
 
 id | name | content
 ----|----|------
 id | name | content
-`, resource: (name: string) => `{
-    "jp": {
-        "sample" : "Sample (jp)",
-        "${name}": "${name} (jp)"
-    },
-    "vi": {
-        "sample" : "Ví dụ",
-        "${name}": "${name} (vi)"
-    }
-}`,
-        template: (className: string) => `<template>
-    <div class="${className}">
-        <h5>1. {{'sample' | i18n}}</h5>
-
-        <markdown />
-    </div>
-</template>`,
-        viewmodel: (path: string, name: string, componentName: string) => `import { Vue } from '@app/provider';
-import { component } from '@app/core/component';
-
-@component({
-    name: '${name}',
-    route: { 
-        url: '/${path}',
-        parent: '/documents'
-    },
-    template: require('./index.vue'),
-    resource: require('./resources.json'),
-    markdown: {
-        vi: require('./content/vi.md'),
-        jp: require('./content/jp.md')
-    }
-})
-export class ${componentName}Component extends Vue { }`
+`
     };
 
-export class FileContents {
-    private toName(path: string, spc: string = ''): string {
-        return path.replace(/(\\|\/)+/g, spc);
-    }
+const toName = (path: string, spc: string = ''): string => {
+    return path.replace(/(\\|\/)+/g, spc);
+};
 
-    private camelCase(path: string): string {
-        let name: string = this.toName(path, '-');
+const camelCase = (path: string): string => {
+    let name: string = toName(path, '-');
 
-        return (name.charAt(0).toUpperCase() + name.slice(1)).replace(/-([a-z0-9])/ig, (all, letter) => letter.toUpperCase());
-    }
+    return (name.charAt(0).toUpperCase() + name.slice(1)).replace(/-([a-z0-9])/ig, (all, letter) => letter.toUpperCase());
+};
 
-    public views = {
-        style: (path: string) => $views.style(this.toName(path)),
-        resource: (path: string) => $views.resource(this.toName(path)),
-        template: (path: string) => $views.template(this.toName(path)),
-        viewmodel: (path: string) => $views.viewmodel(path.replace(/(\\|\/)+/g, '/'), this.toName(path), this.camelCase(path))
-    };
+export const view = {
+    resource: (path: string) => resources(camelCase(path)),
+    template: (path: string) => $view.template(camelCase(path)),
+    viewmodel: (path: string) => $view.viewmodel(camelCase(path))
+};
 
-    public documents = {
-        markdown: () => $documents.markdown(),
-        resource: (path: string) => $documents.resource(this.toName(path)),
-        template: (path: string) => $documents.template(this.toName(path)),
-        viewmodel: (path: string) => $documents.viewmodel(path.replace(/(\\|\/)+/g, '/').replace(/^documents\//, ''), this.toName(path), this.camelCase(path))
-    };
-
-    public components = {
-        single: (path: string) => $component(this.toName(path), this.camelCase(path))
-    }
-}
+export const document = {
+    markdown: () => $document.markdown,
+    resource: (path: string) => resources(camelCase(path)),
+    template: (path: string) => $document.template(camelCase(path)),
+    viewmodel: (path: string) => $document.viewmodel(camelCase(path))
+};

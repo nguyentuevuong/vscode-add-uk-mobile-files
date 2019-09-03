@@ -1,27 +1,28 @@
 # Hướng dẫn sử dụng.
-> `Phần mở rộng` này được sử dụng để hỗ trợ thao tác thêm một `view` mới vào dự án **UK Mobile** một cách nhanh chóng và thuận tiện hơn.
+> `Phần mở rộng` này được sử dụng để hỗ trợ thao tác thêm một `view` mới vào dự án **HL** một cách nhanh chóng và thuận tiện hơn.
 > <br/>Chi tiết thao tác xem hướng dẫn và ảnh động ở bên dưới.
 
 #### 1. Thêm một view (dành cho developer).
-> Tất cả các `view` của **UK Mobile** đều được đặt trong thư mục `/ClientApp/views`. Để thêm một view mới, ta thao tác theo các bước sau:
+> Tất cả các `view` của **HL** đều được đặt trong thư mục `/src/views`. Để thêm một view mới, ta thao tác theo các bước sau:
 
 - Bước 1: Chuột phải vào thư mục `views`.
-- Bước 2: Chọn menu: `UK Mobile: Add component`.
-- Bước 3: Nhập đường dẫn (Ví dụ: `cps/001/a`, `001/a`, `a` hoặc: `cps\001\a`, `001\a`, `a`).
-- Bước 4: Khởi động serve bằng lệnh: `npm run start:dev` và truy cập vào đường link tương ứng với thư mục khởi tạo view để kiểm tra kết quả.
+- Bước 2: Chọn menu: `HL: Add component`.
+- Bước 3: Nhập đường dẫn (Ví dụ: `cps/001/a`, `001/a` hoặc: `cps\001\a`, `001\a`, `a`).
+- Bước 4: Khởi động serve bằng lệnh: `npm run serve` và truy cập vào đường link tương ứng với thư mục khởi tạo view để kiểm tra kết quả.
 - Bước 5: Nếu kết quả khởi tạo đúng. Đẩy toàn bộ những tập tin được tạo và thay đổi lên `github`.
 
 **Hình minh hoạ:**
 
 ![Thêm một view](./images/add-view.gif)
 
-#### 2. Thêm một control (dành cho kiban).
-> Để thêm một `control` (`single file component`) vào **UK Mobile** ta làm theo những bước sau:
+#### 2. Thêm một document (dành cho kiban).
+> Tất cả các `documents` của **HL** đều được đặt trong thư mục `/src/views/documents`. Để thêm một view mới, ta thao tác theo các bước sau:
 
-- Bước 1: Chuột phải vào thư mục cần khởi tạo component.
-- Bước 2: Chọn menu: `UK Mobile: Add single component`.
-- Bước 3: Nhập tên file chứa component (Ví dụ: `nts-input-text`, `nts-input-number`,...).
-- Bước 4: Import component và code theo các hướng dẫn khác đã tạo mục `documents`.
+- Bước 1: Chuột phải vào thư mục `documents`.
+- Bước 2: Chọn menu: `HL: Add document (for kiban)`.
+- Bước 3: Nhập đường dẫn (Ví dụ: `controls/inputs/string`, `inputs/string` hoặc: `controls\inputs\string`, `inputs\string`, `string`).
+- Bước 4: Khởi động serve bằng lệnh: `npm run serve` và truy cập vào đường link tương ứng với thư mục khởi tạo view để kiểm tra kết quả.
+- Bước 5: Nếu kết quả khởi tạo đúng. Đẩy toàn bộ những tập tin được tạo và thay đổi lên `github`.
 
 **Hình minh hoạ:**
 

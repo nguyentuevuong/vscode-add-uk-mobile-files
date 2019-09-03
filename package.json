@@ -1,7 +1,7 @@
 {
-  "name": "vscode-add-uk-mobile-files",
-  "displayName": "Add UK Mobile Files",
-  "description": "Add UK Mobile files including snippets to your Visual Studio Code project",
+  "name": "vscode-add-hl-components",
+  "displayName": "Add HL Files",
+  "description": "Add HL files including snippets to your Visual Studio Code project",
   "version": "1.3.1",
   "publisher": "nguyenvanvuong",
   "license": "SEE LICENSE IN LICENSE.md",
@@ -11,7 +11,7 @@
   "keywords": [
     "Vue",
     "Vue 2",
-    "UK Mobile",
+    "HL",
     "TypeScript",
     "Add files"
   ],
@@ -35,18 +35,13 @@
   "contributes": {
     "commands": [
       {
-        "command": "extension.addUKMobileFiles",
-        "title": "UK Mobile: Add component",
+        "command": "extension.addHLFiles",
+        "title": "HL: Add component",
         "group": "Add Files"
       },
       {
-        "command": "extension.addUKMobileSingleComponent",
-        "title": "UK Mobile: Add single component",
-        "group": "Add Files"
-      },
-      {
-        "command": "extension.addUKMobileDocument",
-        "title": "UK Mobile: Add documents (for kiban)",
+        "command": "extension.addHLDocument",
+        "title": "HL: Add documents (for kiban)",
         "group": "Add Files"
       }
     ],
@@ -54,17 +49,12 @@
       "explorer/context": [
         {
           "when": "explorerResourceIsFolder",
-          "command": "extension.addUKMobileFiles",
+          "command": "extension.addHLFiles",
           "group": "Add Files"
         },
         {
           "when": "explorerResourceIsFolder",
-          "command": "extension.addUKMobileDocument",
-          "group": "Add Files"
-        },
-        {
-          "when": "explorerResourceIsFolder",
-          "command": "extension.addUKMobileSingleComponent",
+          "command": "extension.addHLDocument",
           "group": "Add Files"
         }
       ]
