@@ -1,5 +1,13 @@
 // Place your settings in this file to overwrite default and user settings.
 {
+    "editor.tabSize": 4,
+    "editor.minimap.enabled": false,
+    "editor.autoIndent": true,
+    "editor.formatOnSave": true,
+    "editor.folding": true,
+    "editor.dragAndDrop": false,
+    "editor.showUnused": true,
+    "editor.tabCompletion": "on",
     "files.exclude": {
         "out": false // set this to true to hide the "out" folder with the compiled JS files
     },
