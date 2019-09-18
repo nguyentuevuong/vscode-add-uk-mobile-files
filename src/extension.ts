@@ -1,36 +1,37 @@
 import { ExtensionContext, commands, window } from 'vscode';
-import { showFileNameDialog, createFolder, createViewFiles, createDocumentFiles, openFileInEditor } from './file-managers';
+import { dialog, createViewFiles, createDocumentFiles } from './file-managers';
+
+import { mkdir, openEditor } from './utils';
 
 export function activate(context: ExtensionContext) {
-  context.subscriptions.push(commands.registerCommand('extension.addHLFiles', (args) => {
-    showFileNameDialog(args, 'a')
-      .then(createFolder)
-      .then(createViewFiles)
-      .then(openFileInEditor)
-      .then(() => {
-        window.showInformationMessage('HL: Component was created!');
-        commands.executeCommand("workbench.files.action.refreshFilesExplorer");
-      })
-      .catch((err) => {
-        if (err) {
-          window.showErrorMessage(err);
-        }
-      });
-  }));
+  const err = window.showErrorMessage;
+  const cmd = commands.executeCommand;
+  const reg = commands.registerCommand;
+  const msg = window.showInformationMessage;
 
-  context.subscriptions.push(commands.registerCommand('extension.addHLDocument', (args) => {
-    showFileNameDialog(args, 'docs')
-      .then(createFolder)
-      .then(createDocumentFiles)
-      .then(openFileInEditor)
+  const view = reg('extension.addHLFiles', (args) => {
+    dialog(args, 'a')
+      .then(mkdir)
+      .then(createViewFiles)
+      .then(openEditor)
       .then(() => {
-        window.showInformationMessage('HL: Document was created!');
-        commands.executeCommand("workbench.files.action.refreshFilesExplorer");
+        msg('HL: Component was created!');
+        cmd("workbench.files.action.refreshFilesExplorer");
       })
-      .catch((err) => {
-        if (err) {
-          window.showErrorMessage(err);
-        }
-      });
-  }));
+      .catch(err);
+  });
+  const docs = reg('extension.addHLDocument', (args) => {
+    dialog(args, 'docs')
+      .then(mkdir)
+      .then(createDocumentFiles)
+      .then(openEditor)
+      .then(() => {
+        msg('HL: Document was created!');
+        cmd("workbench.files.action.refreshFilesExplorer");
+      })
+      .catch(err);
+  });
+
+  context.subscriptions.push(view);
+  context.subscriptions.push(docs);
 }
