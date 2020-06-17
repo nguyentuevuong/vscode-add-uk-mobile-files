@@ -31,7 +31,7 @@ export const dialog = (args: any, cName?: string): Q.Promise<string> => {
   } else {
     window.showInputBox({
       value: cName || 'a',
-      prompt: 'HL: What\'s the name of the new folder?'
+      prompt: 'UK: What\'s the name of the new folder?'
     }).then((folderName: string) => {
       if (folderName) {
         if (/[~`!#$%\^&*+=\[\]';,{}|":<>\?\s\.]/g.test(folderName)) {
@@ -40,7 +40,7 @@ export const dialog = (args: any, cName?: string): Q.Promise<string> => {
           deferred.resolve(path.join(newFolderPath, folderName));
         }
       } else {
-        deferred.reject("HL: Task was cancelled!")
+        deferred.reject("UK: Task was cancelled!")
       }
     }, (error) => console.error(error));
   }

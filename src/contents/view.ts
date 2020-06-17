@@ -10,13 +10,13 @@ export const resource = (name: string) => `{
 }`;
 
 export const template = (name: string) => `<template>
-<div class="${toName(name)}">
-    <v-validate />
-    <!-- design template view at below -->
-</div>
+    <div class="${toName(name)}">
+        <!-- design template view at below -->
+    </div>
 </template>
 
-<script lang="ts" src="./viewmodel.ts"></script>
+<script lang="ts" src="./viewmodel.ts" />
+
 <style lang="scss" scoped>
 .${toName(name)} {
     margin: 0;
@@ -28,8 +28,7 @@ export const template = (name: string) => `<template>
 export const viewmodel = (name: string) => `import { Vue, Component } from '@/app/provider';
 
 @Component({
-    name: '${toName(name)}',
-    resources: require('./resources.json'),
+    resource: require('./resources.json'),
     validations: {
         // add validators at here
     },

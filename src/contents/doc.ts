@@ -10,22 +10,21 @@ export const resource = (name: string) => `{
 }`;
 
 export const template = (name: string) => `<template>
-<div class="${toName(name)}">
-    <v-markdown />
-</div>
+    <div class="${toName(name)}">
+        <markdown />
+    </div>
 </template>
 
-<script lang="ts" src="./viewmodel.ts"></script>`;
+<script lang="ts" src="./viewmodel.ts" />`;
 
 export const viewmodel = (name: string) => `import { Vue, Component } from '@/app/provider';
 
 @Component({
-    name: '${toName(name)}',
     markdowns: {
         vi: require('./contents/vi.md'),
         ja: require('./contents/ja.md')
     },
-    resources: require('./resources.json')
+    resource: require('./resources.json')
 })
 export default class ${camelCase(name)}Component extends Vue {
 }`;

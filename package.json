@@ -1,8 +1,8 @@
 {
-  "name": "vscode-add-hl-components",
-  "displayName": "Add HL Files",
-  "description": "Add HL files including snippets to your Visual Studio Code project",
-  "version": "1.3.1",
+  "name": "vscode-add-uk-components",
+  "displayName": "Add UK Files",
+  "description": "Add UK files including snippets to your Visual Studio Code project",
+  "version": "1.4.2",
   "publisher": "nguyenvanvuong",
   "license": "SEE LICENSE IN LICENSE.md",
   "author": {
@@ -11,7 +11,7 @@
   "keywords": [
     "Vue",
     "Vue 2",
-    "HL",
+    "UK",
     "TypeScript",
     "Add files"
   ],
@@ -35,13 +35,13 @@
   "contributes": {
     "commands": [
       {
-        "command": "extension.addHLFiles",
-        "title": "HL: Add component",
+        "command": "extension.addUKFiles",
+        "title": "UK: Add component",
         "group": "Add Files"
       },
       {
-        "command": "extension.addHLDocument",
-        "title": "HL: Add documents (for kiban)",
+        "command": "extension.addUKDocument",
+        "title": "UK: Add documents (for kiban)",
         "group": "Add Files"
       }
     ],
@@ -49,12 +49,12 @@
       "explorer/context": [
         {
           "when": "explorerResourceIsFolder",
-          "command": "extension.addHLFiles",
+          "command": "extension.addUKFiles",
           "group": "Add Files"
         },
         {
           "when": "explorerResourceIsFolder",
-          "command": "extension.addHLDocument",
+          "command": "extension.addUKDocument",
           "group": "Add Files"
         }
       ]
